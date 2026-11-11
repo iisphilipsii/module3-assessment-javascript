@@ -1,0 +1,41 @@
+/* Base styles are written for phones first; media queries further down add to them for wider screens */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+  color: #1f2a26;
+  background-color: #f4f6f5;
+}
+
+h1,
+h2,
+h3 {
+  color: #0b4f3c;
+}
+
+/* One centred column for the header and main content, so lines don't get too long on wide screens */
+header,
+main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+header {
+  border-bottom: 2px solid #0b4f3c;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
