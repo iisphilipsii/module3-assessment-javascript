@@ -18,6 +18,29 @@ function showMessage(messageElement, text, type) {
   messageElement.classList.add(type);
 }
 
+// Rebuilds whole list from the transactions array, so page always matches the data
+function renderTransactions() {
+  const list = document.getElementById("transaction-list");
+  // Empty the list first, or else every render would add all the old rows again
+  list.textContent = "";
+
+  for (let i = 0; i < transactions.length; i++) {
+    const item = document.createElement("li");
+
+    const descriptionText = document.createElement("span");
+    descriptionText.classList.add("transaction-description");
+    descriptionText.textContent = transactions[i].description;
+
+    const amountText = document.createElement("span");
+    amountText.classList.add("transaction-amount");
+    amountText.textContent = formatMoney(transactions[i].amount);
+
+    item.appendChild(descriptionText);
+    item.appendChild(amountText);
+    list.appendChild(item);
+  }
+}
+
 // Runs when the Add expense form is submitted, by clicking the button or pressing Enter
 function addTransaction(event) {
   // Stop the browser's default submit, which would reload the page and lose everything
@@ -46,6 +69,7 @@ function addTransaction(event) {
   }
 
   transactions.push({ description: description, amount: amount });
+  renderTransactions();
 
   // Clear the form and put the cursor back in the first box, ready for the next expense
   descriptionInput.value = "";

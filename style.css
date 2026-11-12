@@ -199,6 +199,37 @@ button:focus-visible {
   color: #4a5a54;
 }
 
+/* Transaction and holiday rows share one style; JavaScript builds the rows (the holidays in Step 15) */
+.transaction-list,
+.holiday-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.transaction-list li,
+.holiday-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  border: 1px solid #d5dfdb;
+  border-radius: 0.5rem;
+}
+
+/* The description takes all the spare space, pushing the amount to the right; long words wrap instead of overflowing */
+.transaction-description {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.transaction-amount {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* Tablets and wider: the small things go side by side */
 @media (min-width: 600px) {
   .summary-boxes {
