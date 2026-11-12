@@ -63,13 +63,22 @@ header {
   border-bottom-color: #0b4f3c;
 }
 
-/* Summary card: the balance is the biggest text on the page because it's what users check first */
-.summary-card {
+/* Cards: the summary and the white boxes around the forms and holidays share one look */
+.summary-card,
+.card {
   padding: 1.5rem;
-  text-align: center;
   background-color: #ffffff;
   border: 1px solid #d5dfdb;
   border-radius: 0.75rem;
+}
+
+/* The balance is the biggest text on the page because it's what users check first */
+.summary-card {
+  text-align: center;
+}
+
+.card h2 {
+  margin-top: 0;
 }
 
 .summary-card h2,
@@ -107,6 +116,28 @@ header {
   margin: 0.25rem 0 0;
   font-size: 1.5rem;
   font-weight: bold;
+}
+
+/* Forms: each label sits above its box, and every box fills the width of its card */
+label {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  border: 1px solid #6b7c75;
+  border-radius: 0.375rem;
+}
+
+/* A thick green ring shows which box you're typing in */
+input:focus-visible {
+  outline: 3px solid #0b4f3c;
+  outline-offset: 2px;
 }
 
 /* Tablets and wider: the Income and Expenses boxes side by side, sharing the width equally */
