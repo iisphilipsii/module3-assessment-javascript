@@ -184,7 +184,22 @@ button:focus-visible {
   color: #b3261e;
 }
 
-/* Tablets and wider: the Income and Expenses boxes side by side, sharing the width equally */
+/* Rows: on phones the sections stack with space between them; the 900px media query puts them side by side */
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Smaller, softer text for the payslip hint and the holidays credit, so they don't compete with the headings */
+.hint,
+.credit {
+  font-size: 0.875rem;
+  color: #4a5a54;
+}
+
+/* Tablets and wider: the small things go side by side */
 @media (min-width: 600px) {
   .summary-boxes {
     flex-direction: row;
@@ -193,9 +208,19 @@ button:focus-visible {
   .summary-box {
     flex: 1;
   }
+  /* Week boxes two to a row; week 5 sits on its own on the left */
+  .week-fields {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .week-field {
+    width: 48%;
+  }
 }
 
-/* Wide screens: logo and title on the left, navigation on the right */
+/* Wide screens: the header and the rows of sections go side by side */
 @media (min-width: 900px) {
   header {
     display: flex;
@@ -205,5 +230,13 @@ button:focus-visible {
 
   .nav-links {
     margin-top: 0;
+  }
+  /* Two equal columns: Transactions beside Add expense, Monthly income beside the holidays */
+  .row {
+    flex-direction: row;
+  }
+
+  .row section {
+    flex: 1;
   }
 }
