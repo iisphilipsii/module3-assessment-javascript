@@ -37,6 +37,18 @@ function renderTransactions() {
 
     item.appendChild(descriptionText);
     item.appendChild(amountText);
+    // A delete button for this row; the aria-label tells screen readers which expense it removes
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.classList.add("secondary-button", "delete-button");
+    deleteButton.textContent = "×";
+    deleteButton.setAttribute("aria-label", "Delete " + transactions[i].description);
+    // This runs later, when the button is clicked, and remembers this row's i
+    deleteButton.addEventListener("click", function () {
+      deleteTransaction(i);
+    });
+    item.appendChild(deleteButton);
+
     list.appendChild(item);
   }
 }
@@ -103,6 +115,17 @@ function addTransaction(event) {
   descriptionInput.focus();
 
   showMessage(messageElement, "Added " + description + " (" + formatMoney(amount) + ").", "success");
+}
+
+// Removes one expense by its position in the array, then redraws the list and the totals
+function deleteTransaction(index) {
+  // Keep the description before it's removed, for the message
+  const description = transactions[index].description;
+  // splice(index, 1) removes 1 item, starting at that position
+  transactions.splice(index, 1);
+  renderTransactions();
+  updateSummary();
+  showMessage(document.getElementById("expense-message"), "Deleted " + description + ".", "success");
 }
 
 // Connect the form to its function. Listening for "submit" catches the button and enter key
