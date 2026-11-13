@@ -41,6 +41,31 @@ function renderTransactions() {
   }
 }
 
+// Works out the totals from the data and shows them in the summary card
+function updateSummary() {
+  // A running total: start at 0 and add each expense's amount in turn
+  let expenses = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    expenses = expenses + transactions[i].amount;
+  }
+
+  // Round to whole cents, so tiny floating-point leftovers (0.1 + 0.2 is 0.30000000000000004) can't make it look negative
+  const balance = Math.round((income - expenses) * 100) / 100;
+
+  document.getElementById("income-total").textContent = formatMoney(income);
+  document.getElementById("expense-total").textContent = formatMoney(expenses);
+
+  const balanceElement = document.getElementById("balance");
+  balanceElement.textContent = formatMoney(balance);
+
+  // Red only when below zero; a balance of exactly €0.00 isn't overspending
+  if (balance < 0) {
+    balanceElement.classList.add("negative");
+  } else {
+    balanceElement.classList.remove("negative");
+  }
+}
+
 // Runs when the Add expense form is submitted, by clicking the button or pressing Enter
 function addTransaction(event) {
   // Stop the browser's default submit, which would reload the page and lose everything
@@ -70,6 +95,7 @@ function addTransaction(event) {
 
   transactions.push({ description: description, amount: amount });
   renderTransactions();
+  updateSummary();
 
   // Clear the form and put the cursor back in the first box, ready for the next expense
   descriptionInput.value = "";
@@ -81,3 +107,5 @@ function addTransaction(event) {
 
 // Connect the form to its function. Listening for "submit" catches the button and enter key
 document.getElementById("expense-form").addEventListener("submit", addTransaction);
+// Show the starting figures from the data when the page first loads
+updateSummary();
