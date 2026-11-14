@@ -201,9 +201,60 @@ function addWeekFive() {
   input.focus();
 }
 
+// Shows one line of text in the holidays list: used for "loading", "none this month" and errors
+function showHolidayNote(text) {
+  const list = document.getElementById("holiday-list");
+  list.textContent = "";
+  const item = document.createElement("li");
+  item.textContent = text;
+  list.appendChild(item);
+}
+
+// Fetches the year's Irish public holidays and lists the ones in the current month.
+// This is display only. If it fails, the rest of the app keeps working.
+async function loadHolidays() {
+  showHolidayNote("Loading holidays...");
+
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const today = new Date();
+  const year = today.getFullYear();
+  // getMonth() counts January as 0, so add 1 to get 1 to 12
+  const currentMonth = today.getMonth() + 1;
+
+  try {
+    const response = await fetch("https://date.nager.at/api/v3/PublicHolidays/" + year + "/IE");
+    // fetch only fails by itself when there's no reply at all. 404 is still a reply.
+    if (!response.ok) {
+      throw new Error("Holiday request failed with status " + response.status);
+    }
+    const holidays = await response.json();
+
+    const list = document.getElementById("holiday-list");
+    list.textContent = "";
+
+    for (let i = 0; i < holidays.length; i++) {
+      const parts = holidays[i].date.split("-");
+      const holidayMonth = Number(parts[1]);
+      // This month only, and real public holidays only (the data also lists Good Friday as a bank holiday)
+      if (holidayMonth === currentMonth && holidays[i].types.includes("Public")) {
+        const item = document.createElement("li");
+        item.textContent = Number(parts[2]) + " " + monthNames[holidayMonth - 1] + " – " + holidays[i].name;
+        list.appendChild(item);
+      }
+    }
+
+    if (list.children.length === 0) {
+      showHolidayNote("No public holidays this month.");
+    }
+  } catch (error) {
+    showHolidayNote("Sorry, the holiday list couldn't be loaded right now.");
+  }
+}
+
 // Connect the forms to their function. Listening for "submit" catches the button and enter key
 document.getElementById("expense-form").addEventListener("submit", addTransaction);
 document.getElementById("income-form").addEventListener("submit", setIncome);
 document.getElementById("add-week-5").addEventListener("click", addWeekFive);
 // Show the starting figures from the data when the page first loads
 updateSummary();
+loadHolidays();

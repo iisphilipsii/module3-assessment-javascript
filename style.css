@@ -199,6 +199,11 @@ button:focus-visible {
   color: #4a5a54;
 }
 
+/* The holidays API credit link uses the app's green instead of the browser's default blue */
+.credit a {
+  color: #0b4f3c;
+}
+
 /* Transaction and holiday rows share one style; JavaScript builds the rows (the holidays in Step 15) */
 .transaction-list,
 .holiday-list {
