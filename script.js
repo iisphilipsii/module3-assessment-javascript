@@ -302,10 +302,39 @@ function loadData() {
   }
 }
 
+// Starts a fresh month: removes every expense, empties the week boxes, removes week 5 and forgets the saved data
+function startNewMonth() {
+  // transactions is a const, so empty the existing array rather than replacing it
+  transactions.splice(0, transactions.length);
+  income = 0;
+
+  // If week 5 was added, remove its whole box (the div around it) and bring the button back
+  const weekFive = document.getElementById("week-5");
+  if (weekFive !== null) {
+    weekFive.parentElement.remove();
+    document.getElementById("add-week-5").classList.remove("hidden");
+  }
+
+  const weekInputs = document.querySelectorAll(".week-pay");
+  for (let i = 0; i < weekInputs.length; i++) {
+    weekInputs[i].value = "";
+  }
+
+  // Clear old messages such as "Added Bus fare", which no longer make sense
+  document.getElementById("expense-message").textContent = "";
+  document.getElementById("income-message").textContent = "";
+
+  localStorage.removeItem(storageKey);
+  renderTransactions();
+  updateSummary();
+  showMessage(document.getElementById("summary-message"), "New month started: all expenses and income cleared.", "success");
+}
+
 // Connect the forms to their function. Listening for "submit" catches the button and enter key
 document.getElementById("expense-form").addEventListener("submit", addTransaction);
 document.getElementById("income-form").addEventListener("submit", setIncome);
 document.getElementById("add-week-5").addEventListener("click", handleAddWeekFiveClick);
+document.getElementById("new-month").addEventListener("click", startNewMonth);
 // When the page opens: restore anything saved, draw page from the data, and fetch the holidays
 loadData();
 renderTransactions();
