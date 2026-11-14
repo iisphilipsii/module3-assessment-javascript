@@ -128,7 +128,53 @@ function deleteTransaction(index) {
   showMessage(document.getElementById("expense-message"), "Deleted " + description + ".", "success");
 }
 
-// Connect the form to its function. Listening for "submit" catches the button and enter key
+// Runs when the income form is submitted: adds up every week box and sets the month's income
+function setIncome(event) {
+  event.preventDefault();
+
+  const messageElement = document.getElementById("income-message");
+  // Every week box has the week-pay class, so this finds 4 boxes now, or 5 boxes once week 5 is added
+  const weekInputs = document.querySelectorAll(".week-pay");
+  let total = 0;
+  let filledBoxes = 0;
+
+  for (let i = 0; i < weekInputs.length; i++) {
+    const input = weekInputs[i];
+
+    // badInput is true when the box holds something the browser can't read as a number, like "1e"
+    if (input.validity.badInput) {
+      showMessage(messageElement, "Week " + (i + 1) + " isn't a valid number.", "error");
+      input.focus();
+      return;
+    }
+
+    // An empty box counts as €0, so it's skipped; income can be set part-way through the month
+    if (input.value !== "") {
+      const pay = Number(input.value);
+      if (pay < 0) {
+        showMessage(messageElement, "Week " + (i + 1) + " can't be negative.", "error");
+        input.focus();
+        return;
+      }
+      total = total + pay;
+      filledBoxes = filledBoxes + 1;
+    }
+  }
+
+  if (filledBoxes === 0) {
+    showMessage(messageElement, "Enter your take-home pay for at least one week.", "error");
+    weekInputs[0].focus();
+    return;
+  }
+
+  // Replace the old income rather than adding to it, so clicking again recalculates from the boxes
+  income = total;
+  updateSummary();
+  showMessage(messageElement, "Income updated: " + formatMoney(income) + ".", "success");
+}
+
+// Connect the forms to their function. Listening for "submit" catches the button and enter key
 document.getElementById("expense-form").addEventListener("submit", addTransaction);
+document.getElementById("income-form").addEventListener("submit", setIncome);
 // Show the starting figures from the data when the page first loads
 updateSummary();
