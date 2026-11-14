@@ -237,6 +237,11 @@ button:focus-visible {
   line-height: 1;
 }
 
+/* JavaScript adds this class to hide something completely. For example, the "+ Add week 5" button once it's used */
+.hidden {
+  display: none;
+}
+
 /* Tablets and wider: the small things go side by side */
 @media (min-width: 600px) {
   .summary-boxes {

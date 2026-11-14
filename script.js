@@ -173,8 +173,37 @@ function setIncome(event) {
   showMessage(messageElement, "Income updated: " + formatMoney(income) + ".", "success");
 }
 
+// This adds a fifth week box for months with five paydays, then hides the button so there can never be a sixth week
+function addWeekFive() {
+  // same structure as the four boxes in index.html: a div holding a label and a number input
+  const field = document.createElement("div");
+  field.classList.add("week-field");
+
+  const label = document.createElement("label");
+  label.setAttribute("for", "week-5");
+  label.textContent = "Week 5 (€)";
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.id = "week-5";
+  input.classList.add("week-pay");
+  input.placeholder = "0.00";
+  input.min = "0";
+  input.step = "0.01";
+
+  field.appendChild(label);
+  field.appendChild(input);
+  document.getElementById("week-fields").appendChild(field);
+
+  // A month has at most five paydays, so button's job is done
+  document.getElementById("add-week-5").classList.add("hidden");
+  // The button the user just pressed has gone, so move the cursor somewhere useful: the new box
+  input.focus();
+}
+
 // Connect the forms to their function. Listening for "submit" catches the button and enter key
 document.getElementById("expense-form").addEventListener("submit", addTransaction);
 document.getElementById("income-form").addEventListener("submit", setIncome);
+document.getElementById("add-week-5").addEventListener("click", addWeekFive);
 // Show the starting figures from the data when the page first loads
 updateSummary();
