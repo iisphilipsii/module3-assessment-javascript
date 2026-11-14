@@ -1,6 +1,8 @@
 // The app's data. Several functions need these, so they live outside any function.
 const transactions = [];
 let income = 0;
+// Everything is saved under this constant in the browser
+const storageKey = "monthlyExpenseTracker";
 
 // Turns a number into euro text with 2 decimal places, e.g. 5.5 becomes "€5.50" and -30 becomes "-€30.00"
 function formatMoney(amount) {
@@ -108,6 +110,7 @@ function addTransaction(event) {
   transactions.push({ description: description, amount: amount });
   renderTransactions();
   updateSummary();
+  saveData();
 
   // Clear the form and put the cursor back in the first box, ready for the next expense
   descriptionInput.value = "";
@@ -125,6 +128,7 @@ function deleteTransaction(index) {
   transactions.splice(index, 1);
   renderTransactions();
   updateSummary();
+  saveData();
   showMessage(document.getElementById("expense-message"), "Deleted " + description + ".", "success");
 }
 
@@ -170,6 +174,7 @@ function setIncome(event) {
   // Replace the old income rather than adding to it, so clicking again recalculates from the boxes
   income = total;
   updateSummary();
+  saveData();
   showMessage(messageElement, "Income updated: " + formatMoney(income) + ".", "success");
 }
 
@@ -197,8 +202,13 @@ function addWeekFive() {
 
   // A month has at most five paydays, so button's job is done
   document.getElementById("add-week-5").classList.add("hidden");
-  // The button the user just pressed has gone, so move the cursor somewhere useful: the new box
-  input.focus();
+}
+
+// Clicking + Add week 5 adds the box, moves the cursor into it and saves
+function handleAddWeekFiveClick() {
+  addWeekFive();
+  document.getElementById("week-5").focus();
+  saveData();
 }
 
 // Shows one line of text in the holidays list: used for "loading", "none this month" and errors
@@ -251,10 +261,53 @@ async function loadHolidays() {
   }
 }
 
+// Saves the expenses, income and week boxes in the browser, so a refresh doesn't lose them
+function saveData() {
+  const weekValues = [];
+  const weekInputs = document.querySelectorAll(".week-pay");
+  for (let i = 0; i < weekInputs.length; i++) {
+    weekValues.push(weekInputs[i].value);
+  }
+
+  const data = { transactions: transactions, income: income, weekValues: weekValues };
+  // localStorage can only store text, so turn the object into JSON text first
+  localStorage.setItem(storageKey, JSON.stringify(data));
+}
+
+// Restores anything saved on an earlier visit; on a first visit there's nothing to restore
+function loadData() {
+  const savedText = localStorage.getItem(storageKey);
+  if (savedText === null) {
+    return;
+  }
+
+  try {
+    const data = JSON.parse(savedText);
+    // transactions is a const, so fill the existing array rather than replacing it
+    for (let i = 0; i < data.transactions.length; i++) {
+      transactions.push(data.transactions[i]);
+    }
+    income = data.income;
+
+    // Five saved week values means week 5 had been added
+    if (data.weekValues.length === 5) {
+      addWeekFive();
+    }
+    const weekInputs = document.querySelectorAll(".week-pay");
+    for (let i = 0; i < weekInputs.length; i++) {
+      weekInputs[i].value = data.weekValues[i];
+    }
+  } catch (error) {
+    localStorage.removeItem(storageKey);
+  }
+}
+
 // Connect the forms to their function. Listening for "submit" catches the button and enter key
 document.getElementById("expense-form").addEventListener("submit", addTransaction);
 document.getElementById("income-form").addEventListener("submit", setIncome);
-document.getElementById("add-week-5").addEventListener("click", addWeekFive);
-// Show the starting figures from the data when the page first loads
+document.getElementById("add-week-5").addEventListener("click", handleAddWeekFiveClick);
+// When the page opens: restore anything saved, draw page from the data, and fetch the holidays
+loadData();
+renderTransactions();
 updateSummary();
 loadHolidays();
